@@ -1,67 +1,127 @@
-#include <stdio.h>
-#include <stdarg.h>
-#include <main.h>
+#include "main.h"
+#include <unistd.h>
+
 /**
- * _printf - Custom printf function with limited format specifiers.
- * @format: The format string containing directives.
- * @...: Variable number of and for the directives.
- *
- * This function prints output according to the provided format string,
- * handling the following conversion specifiers: %c, %s, and %%.
- *
- * Return: The number of characters printed (excluding the null byte used
- *         to end output to strings).
- */
+* _putchar - writes a character to stdout
+* @c: the character to write
+* Return: 1 on success, -1 on error
+*/
+int _putchar(char c)
+{
+return (write(1, &c, 1));
+}
+
+/**
+* print_char - prints a char argument
+* @args: the argument list
+* Return: the number of characters printed
+*/
+int print_char(va_list args)
+{
+char c;
+
+c = va_arg(args, int);
+_putchar(c);
+return (1);
+}
+
+/**
+* print_string - prints a string argument
+* @args: the argument list
+* Return: the number of characters printed
+*/
+int print_string(va_list args)
+{
+char *s;
+int i, len;
+
+s = va_arg(args, char *);
+if (s == NULL)
+s = "(null)";
+len = 0;
+for (i = 0; s[i] != '\0'; i++)
+{
+_putchar(s[i]);
+len++;
+}
+return (len);
+}
+
+/**
+* print_percent - prints a percent sign
+* @args: the argument list
+* Return: the number of characters printed
+*/
+int print_percent(va_list args)
+{
+(void)args;
+_putchar('%');
+return (1);
+}
+
+/**
+* _printf - produces output according to a format
+* @format: the format string
+* Return: the number of characters printed
+*/
 int _printf(const char *format, ...)
 {
-va_list and;
-va_start(and, format);
-int akm = 0;
-while (*format != '\0')
+va_list args;
+int i, j, len;
+format_handler_t handlers[] = {
+{'c', print_char},
+{'s', print_string},
+{'%', print_percent},
+{0, NULL}
+};
+
+if (format == NULL)
+return (-1);
+
+va_start(args, format);
+len = 0;
+for (i = 0; format[i] != '\0'; i++)
 {
-if (*format == '%')
+if (format[i] == '%')
 {
-format++;
-switch (*format)
+if (format[i + 1] == '\0')
+return (-1);
+for (j = 0; handlers[j].specifier != 0; j++)
 {
-case 'c':
-putchar(va_arg(and, int));
-akm++;
+if (format[i + 1] == handlers[j].specifier)
+{
+len += handlers[j].handler(args);
+i++;
 break;
-case 's':
-{
-const char *str = va_arg(and, const char *);
-while (*str != '\0')
-{
-putchar(*str);
-str++;
-akm++;
 }
-break;
 }
-case '%':
-putchar('%');
-akm++;
-break;
+if (handlers[j].specifier == 0)
+{
+_putchar(format[i]);
+len++;
 }
 }
 else
 {
-putchar(*format);
-akm++;
+_putchar(format[i]);
+len++;
 }
-format++;
 }
-va_end(and);
-return (akm);
+va_end(args);
+return (len);
 }
-/**
- * main - this main
- * Return:(0) success
- */
+#include "main.h"
+#include <stdio.h>
+
 int main(void)
 {
-_printf("Hello, %s! The answer is %d%c\n", "World", 42, '%');
+int len1, len2;
+
+len1 = _printf("Hello %s!\n", "world");
+len2 = printf("Hello %s!\n", "world");
+
+_printf("My printf: %d\n", len1);
+printf("Standard printf: %d\n", len2);
+
 return (0);
 }
-
