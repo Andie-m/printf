@@ -1,127 +1,66 @@
-#include "main.h"
-#include <unistd.h>
-
+#include <stdio.h>
+#include <stdarg.h>
+#include <main.h>
 /**
-* _putchar - writes a character to stdout
-* @c: the character to write
-* Return: 1 on success, -1 on error
-*/
-int _putchar(char c)
-{
-return (write(1, &c, 1));
-}
-
-/**
-* print_char - prints a char argument
-* @args: the argument list
-* Return: the number of characters printed
-*/
-int print_char(va_list args)
-{
-char c;
-
-c = va_arg(args, int);
-_putchar(c);
-return (1);
-}
-
-/**
-* print_string - prints a string argument
-* @args: the argument list
-* Return: the number of characters printed
-*/
-int print_string(va_list args)
-{
-char *s;
-int i, len;
-
-s = va_arg(args, char *);
-if (s == NULL)
-s = "(null)";
-len = 0;
-for (i = 0; s[i] != '\0'; i++)
-{
-_putchar(s[i]);
-len++;
-}
-return (len);
-}
-
-/**
-* print_percent - prints a percent sign
-* @args: the argument list
-* Return: the number of characters printed
-*/
-int print_percent(va_list args)
-{
-(void)args;
-_putchar('%');
-return (1);
-}
-
-/**
-* _printf - produces output according to a format
-* @format: the format string
-* Return: the number of characters printed
-*/
+ * _printf - Custom printf function with limited format specifiers.
+ * @format: The format string containing directives.
+ * @...: Variable number of and for the directives.
+ *
+ * This function prints output according to the provided format string,
+ * handling the following conversion specifiers: %c, %s, and %%.
+ *
+ * Return: The number of characters printed (excluding the null byte used to end output to strings).
+ */
 int _printf(const char *format, ...)
 {
-va_list args;
-int i, j, len;
-format_handler_t handlers[] = {
-{'c', print_char},
-{'s', print_string},
-{'%', print_percent},
-{0, NULL}
-};
-
-if (format == NULL)
-return (-1);
-
-va_start(args, format);
-len = 0;
-for (i = 0; format[i] != '\0'; i++)
+va_list and;
+va_start(and, format);
+int akm = 0;
+while (*format != '\0')
 {
-if (format[i] == '%')
+if (*format == '%')
 {
-if (format[i + 1] == '\0')
-return (-1);
-for (j = 0; handlers[j].specifier != 0; j++)
+format++;
+switch (*format)
 {
-if (format[i + 1] == handlers[j].specifier)
+case 'c':
+putchar(va_arg(and, int));
+akm++;
+break;
+case 's':
 {
-len += handlers[j].handler(args);
-i++;
+const char *str = va_arg(and, const char *);
+while (*str != '\0')
+{
+putchar(*str);
+str++;
+akm++;
+}
 break;
 }
-}
-if (handlers[j].specifier == 0)
-{
-_putchar(format[i]);
-len++;
+case '%':
+putchar('%');
+akm++;
+break;
 }
 }
 else
 {
-_putchar(format[i]);
-len++;
+putchar(*format);
+akm++;
 }
+format++;
 }
-va_end(args);
-return (len);
+va_end(and);
+return (akm);
 }
-#include "main.h"
-#include <stdio.h>
-
+/**
+ * main - this main
+ * Return:(0) success
+ */
 int main(void)
 {
-int len1, len2;
-
-len1 = _printf("Hello %s!\n", "world");
-len2 = printf("Hello %s!\n", "world");
-
-_printf("My printf: %d\n", len1);
-printf("Standard printf: %d\n", len2);
-
+_printf("Hello, %s! The answer is %d%c\n", "World", 42, '%');
+printf("akls printf: %d\n", akm);
 return (0);
 }
