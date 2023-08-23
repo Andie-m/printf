@@ -6,7 +6,7 @@
  * Return: number of characters printed to standard output
  **/
 
-int _printf(const char *format, ...)
+int _printf(const char *format, ...);
 {
 
 	int char_print = 0;
