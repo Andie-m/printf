@@ -64,3 +64,7 @@ void print_buffer(char buffer[], int *buff_ind)
 
 	*buff_ind = 0;
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8eca3d02f736350abdabdf507bca9a5aa6390c92
